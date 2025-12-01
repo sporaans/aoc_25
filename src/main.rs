@@ -55,7 +55,7 @@ fn day1_task1(input: &str) -> Result<i32, Box<dyn std::error::Error>>{
 fn day1_task2(input: &str) -> Result<i32, Box<dyn std::error::Error>>{
     let rotations: Vec<&str> = input.trim().split('\n').collect();
     // let rotations: Vec<&str> = vec!["L68", "L30", "R48", "L5", "R60", "L55", "L1", "L99", "R14", "L82"];
-    // let rotations: Vec<&str> = vec!["L150", "L70"];
+    // let rotations: Vec<&str> = vec!["R100"];
     let mut position = 50;
     let mut zeros = 0;
 
@@ -75,22 +75,28 @@ fn day1_task2(input: &str) -> Result<i32, Box<dyn std::error::Error>>{
         }
         zeros = zeros + (position / 100).abs();
 
-        // fugly mess
+        // not even a mother can love this
         if position < 0 {
             position = position % 100;
-            if position != 0{
+            if position != 0 {
+                if start_position != 0 {
+                    zeros = zeros + 1;
+                }
                 position = 100 - position.abs();
+            } else {
+                if start_position != 0 || clicks == 0 {
+                    zeros = zeros + 1;
+                }
             }
-            if start_position == 0 {
-                zeros = zeros -1 
-            }
-            zeros = zeros + 1;
         } else {
+            if position == 0 {
+                zeros = zeros + 1;
+            }
             position = position % 100;
         }
 
         if i < 100 {
-            println!("rotation: {}, position: {}, zeros; {}", rotation, position, zeros);
+            println!("rotation: {}, position: {}, zeros: {}", rotation, position, zeros);
         }
     }
 
