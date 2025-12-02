@@ -10,10 +10,10 @@ fn main() -> std::io::Result<()>{
         Err(e) => eprintln!("Error: {:?}", e),
     }
 
-    // match days::day1::task2(&contents) {
-    //     Ok(result) => println!("Task 2 result: {}", result),
-    //     Err(e) => eprintln!("Error: {:?}", e),
-    // }
+    match days::day2::task2(&contents) {
+        Ok(result) => println!("Task 2 result: {}", result),
+        Err(e) => eprintln!("Error: {:?}", e),
+    }
 
     Ok(())
 }
