@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 pub fn task1(input: &str) -> Result<i64, Box<dyn std::error::Error>> {
     let id_ranges: Vec<&str> = input.trim().split(',').collect();
     let mut result= 0;

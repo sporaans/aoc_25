@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 pub fn task1(input: &str) -> Result<i32, Box<dyn std::error::Error>>{
     let rotations: Vec<&str> = input.trim().split('\n').collect();
     let mut position = 50;
