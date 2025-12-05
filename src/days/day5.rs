@@ -1,7 +1,6 @@
 #![allow(dead_code)]
 
 use anyhow::{Context,Result};
-use std::collections::HashSet;
 use std::cmp::{min, max};
 
 
@@ -29,53 +28,43 @@ pub fn task1(input: &str) -> Result<i64> {
     Ok(result)
 }
 
-pub fn task2(input: &str) -> Result<usize> {
+pub fn task2(input: &str) -> Result<i64> {
     let input: Vec<&str> = input.trim().lines().collect();
     let input_parts: Vec<&[&str]> = input.split(|x| x.is_empty()).collect();
 
-    let mut fresh_ids: HashSet<i64> = HashSet::new();
+    let mut result: i64 = 0;
 
-    let mut merged_ranges: Vec<(i64,i64)> = Vec::new();
-
-    for range in input_parts[0] {
-        let (start_str,end_str) = range.split_once("-").context("problem splitting range")?;
+    let mut ranges: Vec<(i64,i64)> = Vec::new();
+    // transform to ints
+    for range_str in input_parts[0] {
+        let (start_str,end_str) = range_str.split_once("-").context("problem splitting range")?;
 
         let start_int: i64 = start_str.parse()?;
         let end_int: i64 = end_str.parse()?;
 
-        let mut overlap_idx: usize = 0;
-        let mut overlap_range: (i64,i64) = (0,0);
-
-        // find overlap range 
-        for (idx,range) in merged_ranges.iter().enumerate() {
-            overlap_range = range_overlap(range, &(start_int,end_int));
-            if overlap_range != (0,0) {
-                overlap_idx = idx;
-                break;
-            }
-        }
-
-        // reaplace existing or add the new range 
-        if overlap_range != (0,0) {
-            merged_ranges[overlap_idx] = overlap_range
-        } else {
-            merged_ranges.push((start_int,end_int))
-        }
+        ranges.push((start_int,end_int))
     }
 
-    println!("{:?}",merged_ranges);
+    // merge ranges
+    loop {
+        let output = merge_ranges(&ranges);
+        if ranges.len() == output.len() {
+            break
+        }
+        ranges = output;
+    }
 
-    for range in merged_ranges {
+    println!("{:?}",ranges);
+
+    // sum the ints
+    for range in ranges {
         let (start_int, end_int ) = range;
 
-        for id in start_int..=end_int {
-            fresh_ids.insert(id);
-        }
+        let id_count = end_int-start_int+1; //cuz inclusive ranges
+        result += id_count;
     }
 
-    let result = fresh_ids.len();
-
-    Ok(0)
+    Ok(result)
 }
 
 fn range_overlap(first: &(i64, i64), second: &(i64, i64)) -> (i64, i64) {
@@ -89,4 +78,33 @@ fn range_overlap(first: &(i64, i64), second: &(i64, i64)) -> (i64, i64) {
     } else {
         (0, 0)
     }
+}
+
+fn merge_ranges (ranges: &Vec<(i64,i64)>) -> Vec<(i64,i64)> {
+    let mut merged_ranges: Vec<(i64,i64)> = Vec::new();
+
+    for range in ranges {
+        let (start_int, end_int) = *range;
+
+        let mut overlap_idx: usize = 0;
+        let mut overlap_range: (i64,i64) = (0,0);
+
+        // find overlap range 
+        for (idx,range) in merged_ranges.iter().enumerate() {
+            overlap_range = range_overlap(range, &(start_int,end_int));
+            if overlap_range != (0,0) {
+                overlap_idx = idx;
+                break;
+            }
+        }
+
+        // replace existing or add the new range 
+        if overlap_range != (0,0) {
+            merged_ranges[overlap_idx] = overlap_range
+        } else {
+            merged_ranges.push((start_int,end_int))
+        }
+    }
+
+    merged_ranges
 }
