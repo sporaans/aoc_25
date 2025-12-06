@@ -31,8 +31,6 @@ pub fn task1(input: &str) -> Result<i64> {
         }
     }
 
-
-    // let product: i32 = nums.iter().fold(1, |acc, x| acc * x);
     for (i, numbers) in numbers_mx.iter().enumerate() {
         let col_result: i64;
         match operations.get(i) {
