@@ -7,8 +7,7 @@ pub fn task1(input: &str) -> Result<i64> {
     let input_vec: Vec<char> = input
         .trim()
         .lines()
-        .map(|l| l.chars())
-        .flatten()
+        .flat_map(|l| l.chars())
         .collect();
 
     let size = (input_vec.len()+1).isqrt();
@@ -45,8 +44,7 @@ pub fn task2(input: &str) -> Result<i64> {
     let input_vec: Vec<char> = input
         .trim()
         .lines()
-        .map(|l| l.chars())
-        .flatten()
+        .flat_map(|l| l.chars())
         .collect();
 
 
@@ -56,7 +54,7 @@ pub fn task2(input: &str) -> Result<i64> {
     let mut all_removed = false;
 
     while !all_removed {
-        let (next_state, removed) = remove_rolls(current_state, size);
+        let (next_state, removed) = remove_rolls(current_state, size)?;
         current_state = next_state;
         if removed == 0 {
             all_removed = true;
@@ -93,11 +91,11 @@ fn print_matrix(data: Vec<char>, size: usize) {
     println!();
 }
 
-fn remove_rolls(matrix_vec: Vec<char>, size:usize) -> (Vec<char>, i32) {
+fn remove_rolls(matrix_vec: Vec<char>, size:usize) -> Result<(Vec<char>, i32)> {
     let mut result = 0;
     let mut result_matrix: Vec<char> = Vec::new();
 
-    let matrix = Array2::from_shape_vec((size,size), matrix_vec).unwrap();
+    let matrix = Array2::from_shape_vec((size,size), matrix_vec)?;
     let padded_matrix = pad_matrix(&matrix);
     for window in padded_matrix.windows((3,3)) {
         let mut roll_count = 0;
@@ -118,5 +116,5 @@ fn remove_rolls(matrix_vec: Vec<char>, size:usize) -> (Vec<char>, i32) {
             result_matrix.push(window[[1,1]])
         }
     }
-    (result_matrix, result)
+    Ok((result_matrix, result))
 }

@@ -67,42 +67,41 @@ pub fn task2(input: &str) -> Result<i64> {
     Ok(result)
 }
 
-fn range_overlap(first: &(i64, i64), second: &(i64, i64)) -> (i64, i64) {
+fn range_overlap(first: &(i64, i64), second: &(i64, i64)) -> Option<(i64, i64)> {
     let (a1, a2) = first;
     let (b1, b2) = second;
 
     if b1 <= a2 && b2 >= a1 {
         let new_start = min(a1, b1);
         let new_end = max(a2, b2);
-        (*new_start, *new_end)
+        Some((*new_start, *new_end))
     } else {
-        (0, 0)
+        None
     }
 }
 
-fn merge_ranges (ranges: &Vec<(i64,i64)>) -> Vec<(i64,i64)> {
+fn merge_ranges (ranges: &[(i64,i64)]) -> Vec<(i64,i64)> {
     let mut merged_ranges: Vec<(i64,i64)> = Vec::new();
 
     for range in ranges {
         let (start_int, end_int) = *range;
 
         let mut overlap_idx: usize = 0;
-        let mut overlap_range: (i64,i64) = (0,0);
+        let mut overlap_range: Option<(i64, i64)> = None;
 
         // find overlap range 
         for (idx,range) in merged_ranges.iter().enumerate() {
             overlap_range = range_overlap(range, &(start_int,end_int));
-            if overlap_range != (0,0) {
+            if overlap_range != None {
                 overlap_idx = idx;
                 break;
             }
         }
 
         // replace existing or add the new range 
-        if overlap_range != (0,0) {
-            merged_ranges[overlap_idx] = overlap_range
-        } else {
-            merged_ranges.push((start_int,end_int))
+        match overlap_range {
+            Some(or) => merged_ranges[overlap_idx] = or,
+            None => merged_ranges.push((start_int,end_int))
         }
     }
 
